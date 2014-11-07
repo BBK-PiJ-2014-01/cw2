@@ -1,5 +1,7 @@
-/**
-* Created by keith for the second coursework assignment.
+/*
+    Created by keith for the second coursework assignment.
+    Extended by Pierre:
+    - New methods: add, subtract, divide, absValue
 */
 public class Fraction {
     private int numerator;
@@ -58,9 +60,26 @@ public class Fraction {
     }
 
     public Fraction multiply(Fraction other) {
-
         int num = this.getNumerator() * other.getNumerator();
         int denom = this.getDenominator() * other.getDenominator();
+        return new Fraction(num, denom);
+    }
+
+    public Fraction add(Fraction other) {
+        int num = (this.getNumerator() * other.getDenominator()) + (other.getNumerator() * this.getDenominator());
+        int denom = this.getDenominator() * other.getDenominator();
+        return new Fraction(num, denom);
+    }
+
+    public Fraction subtract(Fraction other) {
+        int num = (this.getNumerator() * other.getDenominator()) - (other.getNumerator() * this.getDenominator());
+        int denom = this.getDenominator() * other.getDenominator();
+        return new Fraction(num, denom);
+    }
+
+    public Fraction divide(Fraction other) {
+        int num = this.getNumerator() * other.getDenominator();
+        int denom = this.getDenominator() * other.getNumerator();
         return new Fraction(num, denom);
     }
 
