@@ -12,21 +12,36 @@ public class FractionCalculator {
 
     public void run() {
         boolean finished = false;
-        Fraction value = new Fraction(0,1);
-        Character operation = ' ';
+        Fraction value = new Fraction(1,1);
+        Character operatorMemory = ' ';
         System.out.println("Welcome Pierre Meyer!");
         do {
             Scanner scanner = new Scanner(System.in);
-            System.out.println(scanner.next());
-            System.out.println(scanner.next());
-            System.out.println(scanner.next());
-            System.out.println(scanner.next());
+            String commandLine = scanner.nextLine();
+            String[] commandItem = commandLine.split("\\s");
+            for (int i=0; i<commandItem.length; i++) {
+                if ((commandItem[i].equals("q")) || (commandItem[i].equals("quit"))) {
+                    finished = true;
+                    break;
+                }
+                value = evaluate(value, commandItem[i]);
+                value.toString();
+            }
         } while (!finished);
         System.out.println("Goodbye");
     }
-/*
+
     public Fraction evaluate(Fraction fraction, String inputString) {
-        return();
+        Character commandStd = ' ';
+        Fraction outputFraction = new Fraction(0,1);
+        if (inputString.equalsIgnoreCase("n")||inputString.equalsIgnoreCase("neg"))
+            commandStd = 'n';
+        switch(commandStd) {
+            case 'n': outputFraction = fraction.negate();
+                break;
+            default:
+                break;
+        }
+        return(outputFraction);
     }
-*/
 }
