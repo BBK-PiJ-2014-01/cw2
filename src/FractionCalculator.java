@@ -24,9 +24,13 @@ public class FractionCalculator {
                     finished = true;
                     break;
                 }
+                if ((commandItem[i].equals("c")) || (commandItem[i].equals("clear"))) {
+                    value.setNumerator(0);
+                    continue;
+                }
                 value = evaluate(value, commandItem[i]);
-                value.toString();
             }
+            System.out.println(value.toString());
         } while (!finished);
         System.out.println("Goodbye");
     }
