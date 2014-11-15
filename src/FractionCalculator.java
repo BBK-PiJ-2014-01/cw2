@@ -40,8 +40,10 @@ public class FractionCalculator {
     public Fraction evaluate(Fraction fraction, String inputString) {
         Operation input = Operation.NIL;
         Fraction outputFraction = new Fraction(0,1);
-        if (isFraction(inputString))
+        if (isFraction(inputString)) {
             System.out.println("Fraction!!");
+            System.out.println(parseFraction(inputString).toString());
+        }
         if (inputString.equalsIgnoreCase("n")||inputString.equalsIgnoreCase("neg"))
             input = Operation.NEGATE;
         else
@@ -86,5 +88,12 @@ public class FractionCalculator {
             isFraction = true;
         }
         return(isFraction);
+    }
+
+    private Fraction parseFraction(String input) {
+        String[] fractionItem = input.split("/");
+        int numerator = Integer.parseInt(fractionItem[0]);
+        int denominator = Integer.parseInt(fractionItem[1]);
+        return(new Fraction(numerator, denominator));
     }
 }
