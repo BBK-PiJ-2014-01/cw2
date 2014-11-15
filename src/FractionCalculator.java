@@ -9,8 +9,8 @@ public class FractionCalculator {
     private Operation calculatorMemory;
 
     public FractionCalculator(Fraction fraction, Operation memory) {
-        this.calculatorValue = fraction;
-        this.calculatorMemory = memory;
+        this.calculatorValue = fraction; // check
+        this.calculatorMemory = memory; // check
     }
 
     public Fraction getCalculatorValue() {
@@ -55,14 +55,14 @@ public class FractionCalculator {
 
     public Fraction evaluate(Fraction fraction, String inputString) {
         Operation input = Operation.NIL;
-        Fraction outputFraction = new Fraction(0,1);
+        Fraction outputFraction;
 
         if (inputString.equals("*")) {
             if (getCalculatorMemory() == Operation.NIL) {
                 setCalculatorMemory(Operation.MULTIPLY);
             } else {
                 System.out.println("Error: operator already provided");
-                reset(); // check other occurrences
+                reset();
             }
         }
 
@@ -71,7 +71,7 @@ public class FractionCalculator {
                 setCalculatorMemory(Operation.ADD);
             } else {
                 System.out.println("Error: operator already provided");
-                this.reset();
+                reset();
             }
         }
 
@@ -80,7 +80,7 @@ public class FractionCalculator {
                 setCalculatorMemory(Operation.SUBTRACT);
             } else {
                 System.out.println("Error: operator already provided");
-                this.reset();
+                reset();
             }
         }
 
@@ -89,7 +89,7 @@ public class FractionCalculator {
                 setCalculatorMemory(Operation.DIVIDE);
             } else {
                 System.out.println("Error: operator already provided");
-                this.reset();
+                reset();
             }
         }
 
@@ -112,7 +112,29 @@ public class FractionCalculator {
                     input = Operation.CLEAR_VALUE;
 
         switch(input) {
-            case ADD: outputFraction = calculatorValue.add(parseFraction(inputString));
+            case ADD:
+                if (isFraction(inputString))
+                    outputFraction = getCalculatorValue().add(parseFraction(inputString));
+                else
+                    outputFraction = getCalculatorValue().add(new Fraction(parseInteger(inputString),1));
+                break;
+            case SUBTRACT:
+                if (isFraction(inputString))
+                    outputFraction = getCalculatorValue().subtract(parseFraction(inputString));
+                else
+                    outputFraction = getCalculatorValue().subtract(new Fraction(parseInteger(inputString),1));
+                break;
+            case MULTIPLY:
+                if (isFraction(inputString))
+                    outputFraction = getCalculatorValue().multiply(parseFraction(inputString));
+                else
+                    outputFraction = getCalculatorValue().multiply(new Fraction(parseInteger(inputString),1));
+                break;
+            case DIVIDE:
+                if (isFraction(inputString))
+                    outputFraction = getCalculatorValue().divide(parseFraction(inputString));
+                else
+                    outputFraction = getCalculatorValue().divide(new Fraction(parseInteger(inputString),1));
                 break;
             case ABSOLUTE: outputFraction = fraction.absValue();
                 break;
@@ -122,7 +144,7 @@ public class FractionCalculator {
                 break;
             case CLEAR_VALUE: outputFraction = new Fraction(0,1);
                 break;
-            default: outputFraction = fraction;
+            default: outputFraction = getCalculatorValue(); //check other cases
                 break;
         }
         return(outputFraction);
@@ -146,6 +168,10 @@ public class FractionCalculator {
             isFraction = true;
         }
         return(isFraction);
+    }
+
+    private int parseInteger(String input) {
+        return(Integer.parseInt(input));
     }
 
     private Fraction parseFraction(String input) {
