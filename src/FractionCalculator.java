@@ -48,13 +48,14 @@ public class FractionCalculator {
                 }
                 setCalculatorValue(evaluate(getCalculatorValue(), commandItem[i]));
             }
-            System.out.println(calculatorValue.toString()); // Remove later
+            System.out.println(calculatorValue.toString());
         } while (!finished);
         System.out.println("Goodbye");
     }
 
     public Fraction evaluate(Fraction fraction, String inputString) {
         Operation input = Operation.NIL;
+        Fraction newFraction = new Fraction(0,1);
         Fraction outputFraction;
 
         if (inputString.equals("*")) {
@@ -93,7 +94,18 @@ public class FractionCalculator {
             }
         }
 
-        if (isFraction(inputString) || isInteger(inputString)) {
+        if (isInteger(inputString)) {
+            newFraction = new Fraction(parseInteger(inputString),1);
+            if (getCalculatorMemory() == Operation.NIL) {
+                input = Operation.STORE_VALUE;
+            } else {
+                input = getCalculatorMemory();
+                setCalculatorMemory(Operation.NIL);
+            }
+        }
+
+        if (isFraction(inputString)) {
+            newFraction = parseFraction(inputString);
             if (getCalculatorMemory() == Operation.NIL) {
                 input = Operation.STORE_VALUE;
             } else {
@@ -104,47 +116,40 @@ public class FractionCalculator {
 
         if (inputString.equalsIgnoreCase("n")||inputString.equalsIgnoreCase("neg"))
             input = Operation.NEGATE;
-        else
-            if (inputString.equalsIgnoreCase("a")||inputString.equalsIgnoreCase("abs"))
-               input = Operation.ABSOLUTE;
-            else
-                if (inputString.equalsIgnoreCase("c")||inputString.equalsIgnoreCase("clear"))
-                    input = Operation.CLEAR_VALUE;
+
+        if (inputString.equalsIgnoreCase("a")||inputString.equalsIgnoreCase("abs"))
+            input = Operation.ABSOLUTE;
+
+        if (inputString.equalsIgnoreCase("c")||inputString.equalsIgnoreCase("clear"))
+            input = Operation.CLEAR_VALUE;
 
         switch(input) {
             case ADD:
-                if (isFraction(inputString))
-                    outputFraction = getCalculatorValue().add(parseFraction(inputString));
-                else
-                    outputFraction = getCalculatorValue().add(new Fraction(parseInteger(inputString),1));
+                outputFraction = getCalculatorValue().add(newFraction);
                 break;
             case SUBTRACT:
-                if (isFraction(inputString))
-                    outputFraction = getCalculatorValue().subtract(parseFraction(inputString));
-                else
-                    outputFraction = getCalculatorValue().subtract(new Fraction(parseInteger(inputString),1));
+                outputFraction = getCalculatorValue().subtract(newFraction);
                 break;
             case MULTIPLY:
-                if (isFraction(inputString))
-                    outputFraction = getCalculatorValue().multiply(parseFraction(inputString));
-                else
-                    outputFraction = getCalculatorValue().multiply(new Fraction(parseInteger(inputString),1));
+                outputFraction = getCalculatorValue().multiply(newFraction);
                 break;
             case DIVIDE:
-                if (isFraction(inputString))
-                    outputFraction = getCalculatorValue().divide(parseFraction(inputString));
-                else
-                    outputFraction = getCalculatorValue().divide(new Fraction(parseInteger(inputString),1));
+                outputFraction = getCalculatorValue().divide(newFraction);
                 break;
-            case ABSOLUTE: outputFraction = fraction.absValue();
+            case ABSOLUTE:
+                outputFraction = fraction.absValue();
                 break;
-            case NEGATE: outputFraction = fraction.negate();
+            case NEGATE:
+                outputFraction = fraction.negate();
                 break;
-            case STORE_VALUE: outputFraction = parseFraction(inputString);
+            case STORE_VALUE:
+                outputFraction = newFraction;
                 break;
-            case CLEAR_VALUE: outputFraction = new Fraction(0,1);
+            case CLEAR_VALUE:
+                outputFraction = new Fraction(0,1);
                 break;
-            default: outputFraction = getCalculatorValue(); //check other cases
+            default:
+                outputFraction = getCalculatorValue(); //check other cases
                 break;
         }
         return(outputFraction);
