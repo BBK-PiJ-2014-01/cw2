@@ -8,5 +8,6 @@ public enum Operation {
     MULTIPLY,
     DIVIDE,
     NEGATE,
-    ABSOLUTE
+    ABSOLUTE,
+    CLEAR
 }

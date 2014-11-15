@@ -26,44 +26,39 @@ public class FractionCalculator {
             String commandLine = scanner.nextLine();
             String[] commandItem = commandLine.split("\\s");
             for (int i=0; i<commandItem.length; i++) {
-                if ((commandItem[i].equals("q")) || (commandItem[i].equals("quit"))) {
+                if ((commandItem[i].equalsIgnoreCase("q")) || (commandItem[i].equalsIgnoreCase("quit"))) {
                     finished = true;
                     break;
                 }
-                if ((commandItem[i].equals("c")) || (commandItem[i].equals("clear"))) {
-                    value.setNumerator(0);
-                    continue;
-                }
-                if ((commandItem[i].equals("*")) )
                 value = evaluate(value, commandItem[i]);
             }
-            System.out.println(value.toString());
+            System.out.println(value.toString()); // Remove later
         } while (!finished);
         System.out.println("Goodbye");
     }
 
     public Fraction evaluate(Fraction fraction, String inputString) {
-        Character commandStd = ' ';
+        Operation input = Operation.NIL;
         Fraction outputFraction = new Fraction(0,1);
         if (inputString.equalsIgnoreCase("n")||inputString.equalsIgnoreCase("neg"))
-            commandStd = 'n';
+            input = Operation.NEGATE;
         else
             if (inputString.equalsIgnoreCase("a")||inputString.equalsIgnoreCase("abs"))
-                commandStd = 'a';
+               input = Operation.ABSOLUTE;
             else
                 if (inputString.equalsIgnoreCase("c")||inputString.equalsIgnoreCase("clear"))
-                    commandStd = 'c';
+                    input = Operation.CLEAR;
                 else
                     if ((inputString.length()>1) && (inputString.contains("\\"))) {
                         System.out.println("Fraction");
                     }
 
-        switch(commandStd) {
-            case 'a': outputFraction = fraction.absValue();
+        switch(input) {
+            case ABSOLUTE: outputFraction = fraction.absValue();
                 break;
-            case 'c': outputFraction = new Fraction(0,1);
+            case CLEAR: outputFraction = new Fraction(0,1);
                 break;
-            case 'n': outputFraction = fraction.negate();
+            case NEGATE: outputFraction = fraction.negate();
                 break;
             default:
                 break;
@@ -76,4 +71,14 @@ public class FractionCalculator {
         this.operationMemory = Operation.NIL;
     }
 
+    private boolean isInteger(String input) {
+        boolean isInteger = false;
+        if (input.matches("-?\\d+"))
+            isInteger = true;
+        return(isInteger);
+    }
+
+    private boolean isFraction(String input) {
+
+    }
 }
