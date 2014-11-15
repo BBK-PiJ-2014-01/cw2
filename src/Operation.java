@@ -9,5 +9,6 @@ public enum Operation {
     DIVIDE,
     NEGATE,
     ABSOLUTE,
-    CLEAR
+    CLEAR_VALUE,
+    STORE_VALUE
 }

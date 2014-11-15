@@ -5,12 +5,28 @@ import java.util.Scanner;
 
 public class FractionCalculator {
 
-    Fraction value;
-    Operation operationMemory;
+    private Fraction calculatorValue;
+    private Operation calculatorMemory;
 
     public FractionCalculator(Fraction fraction, Operation memory) {
-        this.value = fraction;
-        this.operationMemory = memory;
+        this.calculatorValue = fraction;
+        this.calculatorMemory = memory;
+    }
+
+    public Fraction getCalculatorValue() {
+        return(calculatorValue);
+    }
+
+    public void setCalculatorValue(Fraction fraction) {
+        calculatorValue = fraction;
+    }
+
+    public Operation getCalculatorMemory() {
+        return(calculatorMemory);
+    }
+
+    public void setCalculatorMemory(Operation operation) {
+        calculatorMemory = operation;
     }
 
     public static void main(String[] args) {
@@ -30,9 +46,9 @@ public class FractionCalculator {
                     finished = true;
                     break;
                 }
-                value = evaluate(value, commandItem[i]);
+                setCalculatorValue(evaluate(getCalculatorValue(), commandItem[i]));
             }
-            System.out.println(value.toString()); // Remove later
+            System.out.println(calculatorValue.toString()); // Remove later
         } while (!finished);
         System.out.println("Goodbye");
     }
@@ -40,10 +56,52 @@ public class FractionCalculator {
     public Fraction evaluate(Fraction fraction, String inputString) {
         Operation input = Operation.NIL;
         Fraction outputFraction = new Fraction(0,1);
-        if (isFraction(inputString)) {
-            System.out.println("Fraction!!");
-            System.out.println(parseFraction(inputString).toString());
+
+        if (inputString.equals("*")) {
+            if (getCalculatorMemory() == Operation.NIL) {
+                setCalculatorMemory(Operation.MULTIPLY);
+            } else {
+                System.out.println("Error: operator already provided");
+                reset(); // check other occurrences
+            }
         }
+
+        if (inputString.equals("+")) {
+            if (getCalculatorMemory() == Operation.NIL) {
+                setCalculatorMemory(Operation.ADD);
+            } else {
+                System.out.println("Error: operator already provided");
+                this.reset();
+            }
+        }
+
+        if (inputString.equals("-")) {
+            if (getCalculatorMemory() == Operation.NIL) {
+                setCalculatorMemory(Operation.SUBTRACT);
+            } else {
+                System.out.println("Error: operator already provided");
+                this.reset();
+            }
+        }
+
+        if (inputString.equals("/")) {
+            if (getCalculatorMemory() == Operation.NIL) {
+                setCalculatorMemory(Operation.DIVIDE);
+            } else {
+                System.out.println("Error: operator already provided");
+                this.reset();
+            }
+        }
+
+        if (isFraction(inputString) || isInteger(inputString)) {
+            if (getCalculatorMemory() == Operation.NIL) {
+                input = Operation.STORE_VALUE;
+            } else {
+                input = getCalculatorMemory();
+                setCalculatorMemory(Operation.NIL);
+            }
+        }
+
         if (inputString.equalsIgnoreCase("n")||inputString.equalsIgnoreCase("neg"))
             input = Operation.NEGATE;
         else
@@ -51,28 +109,28 @@ public class FractionCalculator {
                input = Operation.ABSOLUTE;
             else
                 if (inputString.equalsIgnoreCase("c")||inputString.equalsIgnoreCase("clear"))
-                    input = Operation.CLEAR;
-                else
-                    if ((inputString.length()>1) && (inputString.contains("\\"))) {
-                        System.out.println("Fraction");
-                    }
+                    input = Operation.CLEAR_VALUE;
 
         switch(input) {
-            case ABSOLUTE: outputFraction = fraction.absValue();
+            case ADD: outputFraction = calculatorValue.add(parseFraction(inputString));
                 break;
-            case CLEAR: outputFraction = new Fraction(0,1);
+            case ABSOLUTE: outputFraction = fraction.absValue();
                 break;
             case NEGATE: outputFraction = fraction.negate();
                 break;
-            default:
+            case STORE_VALUE: outputFraction = parseFraction(inputString);
+                break;
+            case CLEAR_VALUE: outputFraction = new Fraction(0,1);
+                break;
+            default: outputFraction = fraction;
                 break;
         }
         return(outputFraction);
     }
 
     private void reset() {
-        this.value = new Fraction(0,1);
-        this.operationMemory = Operation.NIL;
+        setCalculatorValue(new Fraction(0,1));
+        setCalculatorMemory(Operation.NIL);
     }
 
     private boolean isInteger(String input) {
