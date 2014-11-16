@@ -9,8 +9,7 @@ public class Fraction {
 
     public Fraction(int num, int denom) {
         if (denom == 0) {
-            System.out.println("Invalid fraction with denominator 0");
-            // this should use exceptions
+            System.out.println("Error");
             return;
         }
         int gcd = myGcd(num, denom);

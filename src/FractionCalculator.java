@@ -7,10 +7,12 @@ public class FractionCalculator {
 
     private Fraction calculatorValue;
     private Operation calculatorMemory;
+    private boolean errorState = false;         // Raised for general exceptions not requiring app. exit - Spec. page 2
+    private boolean fatalErrorState = false;    // Raised when unexpected input requiring app. exit - Spec. page 1
 
     public FractionCalculator(Fraction fraction, Operation memory) {
-        this.calculatorValue = fraction; // check
-        this.calculatorMemory = memory; // check
+        this.calculatorValue = fraction;
+        this.calculatorMemory = memory;
     }
 
     public Fraction getCalculatorValue() {
@@ -29,6 +31,23 @@ public class FractionCalculator {
         calculatorMemory = operation;
     }
 
+    public boolean getErrorState() {
+        return(errorState);
+    }
+
+    public void setErrorState(boolean state) {
+        errorState = state;
+    }
+
+    public boolean getFatalErrorState() {
+        return(fatalErrorState);
+    }
+
+    public void setFatalErrorState(boolean state) {
+        fatalErrorState = state;
+    }
+
+
     public static void main(String[] args) {
         FractionCalculator fc = new FractionCalculator(new Fraction(0,1),Operation.NIL);
         fc.run();
@@ -41,12 +60,21 @@ public class FractionCalculator {
             Scanner scanner = new Scanner(System.in);
             String commandLine = scanner.nextLine();
             String[] commandItem = commandLine.split("\\s");
-            for (int i=0; i<commandItem.length; i++) {
+            for (int i=0; i<commandItem.length && !getErrorState(); i++) {
                 if ((commandItem[i].equalsIgnoreCase("q")) || (commandItem[i].equalsIgnoreCase("quit"))) {
                     finished = true;
                     break;
                 }
                 setCalculatorValue(evaluate(getCalculatorValue(), commandItem[i]));
+            }
+            if (getErrorState()) {
+                if (getFatalErrorState()) {
+                    System.out.println("Error: incorrect entry");
+                    finished = true;
+                } else {
+                    System.out.println("Error: operator already provided");
+                }
+                reset();
             }
             System.out.println(calculatorValue.toString());
         } while (!finished);
@@ -57,40 +85,45 @@ public class FractionCalculator {
         Operation input = Operation.NIL;
         Fraction newFraction = new Fraction(0,1);
         Fraction outputFraction;
+        Boolean errorInput = true;
 
         if (inputString.equals("*")) {
+            errorInput = false;
             if (getCalculatorMemory() == Operation.NIL) {
                 setCalculatorMemory(Operation.MULTIPLY);
             } else {
                 System.out.println("Error: operator already provided");
-                reset();
+                setErrorState(true);
             }
         }
 
         if (inputString.equals("+")) {
+            errorInput = false;
             if (getCalculatorMemory() == Operation.NIL) {
                 setCalculatorMemory(Operation.ADD);
             } else {
                 System.out.println("Error: operator already provided");
-                reset();
+                setErrorState(true);
             }
         }
 
         if (inputString.equals("-")) {
+            errorInput = false;
             if (getCalculatorMemory() == Operation.NIL) {
                 setCalculatorMemory(Operation.SUBTRACT);
             } else {
                 System.out.println("Error: operator already provided");
-                reset();
+                setErrorState(true);
             }
         }
 
         if (inputString.equals("/")) {
+            errorInput = false;
             if (getCalculatorMemory() == Operation.NIL) {
                 setCalculatorMemory(Operation.DIVIDE);
             } else {
                 System.out.println("Error: operator already provided");
-                reset();
+                setErrorState(true);
             }
         }
 
@@ -114,14 +147,23 @@ public class FractionCalculator {
             }
         }
 
-        if (inputString.equalsIgnoreCase("n")||inputString.equalsIgnoreCase("neg"))
+        if (inputString.equalsIgnoreCase("n")||inputString.equalsIgnoreCase("neg")) {
+            errorInput = false;
             input = Operation.NEGATE;
+        }
 
-        if (inputString.equalsIgnoreCase("a")||inputString.equalsIgnoreCase("abs"))
+        if (inputString.equalsIgnoreCase("a")||inputString.equalsIgnoreCase("abs")) {
+            errorInput = false;
             input = Operation.ABSOLUTE;
+        }
 
-        if (inputString.equalsIgnoreCase("c")||inputString.equalsIgnoreCase("clear"))
+        if (inputString.equalsIgnoreCase("c")||inputString.equalsIgnoreCase("clear")) {
+            errorInput = false;
             input = Operation.CLEAR_VALUE;
+        }
+
+        if (errorInput)
+            setFatalErrorState(true);
 
         switch(input) {
             case ADD:
@@ -149,7 +191,7 @@ public class FractionCalculator {
                 outputFraction = new Fraction(0,1);
                 break;
             default:
-                outputFraction = getCalculatorValue(); //check other cases
+                outputFraction = getCalculatorValue();
                 break;
         }
         return(outputFraction);
@@ -158,6 +200,8 @@ public class FractionCalculator {
     private void reset() {
         setCalculatorValue(new Fraction(0,1));
         setCalculatorMemory(Operation.NIL);
+        setErrorState(false);
+        setFatalErrorState(false);
     }
 
     private boolean isInteger(String input) {
