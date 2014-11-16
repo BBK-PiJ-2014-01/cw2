@@ -71,8 +71,6 @@ public class FractionCalculator {
                 if (getFatalErrorState()) {
                     System.out.println("Error: incorrect entry");
                     finished = true;
-                } else {
-                    System.out.println("Error: operator already provided");
                 }
                 reset();
             }
@@ -128,6 +126,7 @@ public class FractionCalculator {
         }
 
         if (isInteger(inputString)) {
+            errorInput = false;
             newFraction = new Fraction(parseInteger(inputString),1);
             if (getCalculatorMemory() == Operation.NIL) {
                 input = Operation.STORE_VALUE;
@@ -138,6 +137,7 @@ public class FractionCalculator {
         }
 
         if (isFraction(inputString)) {
+            errorInput = false;
             newFraction = parseFraction(inputString);
             if (getCalculatorMemory() == Operation.NIL) {
                 input = Operation.STORE_VALUE;
@@ -162,8 +162,10 @@ public class FractionCalculator {
             input = Operation.CLEAR_VALUE;
         }
 
-        if (errorInput)
+        if (errorInput) {
+            setErrorState(true);
             setFatalErrorState(true);
+        }
 
         switch(input) {
             case ADD:
