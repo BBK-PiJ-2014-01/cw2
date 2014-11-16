@@ -169,16 +169,16 @@ public class FractionCalculator {
 
         switch(input) {
             case ADD:
-                outputFraction = getCalculatorValue().add(newFraction);
+                outputFraction = fraction.add(newFraction);
                 break;
             case SUBTRACT:
-                outputFraction = getCalculatorValue().subtract(newFraction);
+                outputFraction = fraction.subtract(newFraction);
                 break;
             case MULTIPLY:
-                outputFraction = getCalculatorValue().multiply(newFraction);
+                outputFraction = fraction.multiply(newFraction);
                 break;
             case DIVIDE:
-                outputFraction = getCalculatorValue().divide(newFraction);
+                outputFraction = fraction.divide(newFraction);
                 break;
             case ABSOLUTE:
                 outputFraction = fraction.absValue();
@@ -193,7 +193,7 @@ public class FractionCalculator {
                 outputFraction = new Fraction(0,1);
                 break;
             default:
-                outputFraction = getCalculatorValue();
+                outputFraction = fraction;
                 break;
         }
         return(outputFraction);
@@ -208,14 +208,14 @@ public class FractionCalculator {
 
     private boolean isInteger(String input) {
         boolean isInteger = false;
-        if (input.matches("[-]?\\d+"))
+        if (input.matches("[-,+]?\\d+"))
             isInteger = true;
         return(isInteger);
     }
 
     private boolean isFraction(String input) {
         boolean isFraction = false;
-        if (input.matches("[-]?\\d+[/][-]?\\d+")) {
+        if (input.matches("[-,+]?\\d+[/][-,+]?\\d+")) {
             isFraction = true;
         }
         return(isFraction);
