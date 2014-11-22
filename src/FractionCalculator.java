@@ -9,6 +9,7 @@ public class FractionCalculator {
     private Operation calculatorMemory;
     private boolean errorState = false;         // Raised for general exceptions not requiring app. exit - Spec. page 2
     private boolean fatalErrorState = false;    // Raised when unexpected input requiring app. exit - Spec. page 1
+    private boolean finishedState = false;
 
     public FractionCalculator(Fraction fraction, Operation memory) {
         this.calculatorValue = fraction;
@@ -47,6 +48,13 @@ public class FractionCalculator {
         fatalErrorState = state;
     }
 
+    public boolean getFinishedState() {
+        return(finishedState);
+    }
+
+    public void setFinishedState(boolean state) {
+        finishedState = state;
+    }
 
     public static void main(String[] args) {
         FractionCalculator fc = new FractionCalculator(new Fraction(0,1),Operation.NIL);
@@ -54,147 +62,150 @@ public class FractionCalculator {
     }
 
     public void run() {
-        boolean finished = false;
         System.out.println("Welcome Pierre Meyer!");
         do {
             Scanner scanner = new Scanner(System.in);
             String commandLine = scanner.nextLine();
-            String[] commandItem = commandLine.split("\\s");
-            for (int i=0; i<commandItem.length && !getErrorState(); i++) {
-                if ((commandItem[i].equalsIgnoreCase("q")) || (commandItem[i].equalsIgnoreCase("quit"))) {
-                    finished = true;
-                    break;
-                }
-                setCalculatorValue(evaluate(getCalculatorValue(), commandItem[i]));
-            }
+            setCalculatorValue(evaluate(getCalculatorValue(), commandLine));
             if (getErrorState()) {
                 if (getFatalErrorState()) {
                     System.out.println("Error: incorrect entry");
-                    finished = true;
+                    setFinishedState(true);
                 }
                 reset();
             }
             System.out.println(calculatorValue.toString());
-        } while (!finished);
-        System.out.println("Goodbye");
+        } while (!getFinishedState());
     }
 
     public Fraction evaluate(Fraction fraction, String inputString) {
-        Operation input = Operation.NIL;
-        Fraction newFraction = new Fraction(0,1);
-        Fraction outputFraction;
-        Boolean errorInput = true;
 
-        if (inputString.equals("*")) {
-            errorInput = false;
-            if (getCalculatorMemory() == Operation.NIL) {
-                setCalculatorMemory(Operation.MULTIPLY);
-            } else {
-                System.out.println("Error: operator already provided");
+        Fraction newFraction = new Fraction(0,1); // check
+        Fraction outputFraction = fraction; // check
+        //Fraction inputFraction = fraction;
+
+        String[] commandItem = inputString.split("\\s");
+
+        for (int i=0; i<commandItem.length && !getErrorState() && !getFinishedState(); i++) {
+            Operation input = Operation.NIL;
+            Fraction inputFraction = outputFraction;
+            Boolean errorInput = true;
+            if ((commandItem[i].equalsIgnoreCase("q")) || (commandItem[i].equalsIgnoreCase("quit")) || (commandItem[i].equalsIgnoreCase("exit"))) {
+                errorInput = false;
+                setFinishedState(true);
+            }
+
+            if (commandItem[i].equals("*")) {
+                errorInput = false;
+                if (getCalculatorMemory() == Operation.NIL) {
+                    setCalculatorMemory(Operation.MULTIPLY);
+                } else {
+                    System.out.println("Error: operator already provided");
+                    setErrorState(true);
+                }
+            }
+
+            if (commandItem[i].equals("+")) {
+                errorInput = false;
+                if (getCalculatorMemory() == Operation.NIL) {
+                    setCalculatorMemory(Operation.ADD);
+                } else {
+                    System.out.println("Error: operator already provided");
+                    setErrorState(true);
+                }
+            }
+
+            if (commandItem[i].equals("-")) {
+                errorInput = false;
+                if (getCalculatorMemory() == Operation.NIL) {
+                    setCalculatorMemory(Operation.SUBTRACT);
+                } else {
+                    System.out.println("Error: operator already provided");
+                    setErrorState(true);
+                }
+            }
+
+            if (commandItem[i].equals("/")) {
+                errorInput = false;
+                if (getCalculatorMemory() == Operation.NIL) {
+                    setCalculatorMemory(Operation.DIVIDE);
+                } else {
+                    System.out.println("Error: operator already provided");
+                    setErrorState(true);
+                }
+            }
+
+            if (isInteger(commandItem[i])) {
+                errorInput = false;
+                newFraction = new Fraction(parseInteger(commandItem[i]), 1);
+                if (getCalculatorMemory() == Operation.NIL) {
+                    input = Operation.STORE_VALUE;
+                } else {
+                    input = getCalculatorMemory();
+                    setCalculatorMemory(Operation.NIL);
+                }
+            }
+
+            if (isFraction(commandItem[i])) {
+                errorInput = false;
+                newFraction = parseFraction(commandItem[i]);
+                if (getCalculatorMemory() == Operation.NIL) {
+                    input = Operation.STORE_VALUE;
+                } else {
+                    input = getCalculatorMemory();
+                    setCalculatorMemory(Operation.NIL);
+                }
+            }
+
+            if (commandItem[i].equalsIgnoreCase("n") || commandItem[i].equalsIgnoreCase("neg")) {
+                errorInput = false;
+                input = Operation.NEGATE;
+            }
+
+            if (commandItem[i].equalsIgnoreCase("a") || commandItem[i].equalsIgnoreCase("abs")) {
+                errorInput = false;
+                input = Operation.ABSOLUTE;
+            }
+
+            if (commandItem[i].equalsIgnoreCase("c") || commandItem[i].equalsIgnoreCase("clear")) {
+                errorInput = false;
+                input = Operation.CLEAR_VALUE;
+            }
+
+            if (errorInput) {
                 setErrorState(true);
+                setFatalErrorState(true);
             }
-        }
 
-        if (inputString.equals("+")) {
-            errorInput = false;
-            if (getCalculatorMemory() == Operation.NIL) {
-                setCalculatorMemory(Operation.ADD);
-            } else {
-                System.out.println("Error: operator already provided");
-                setErrorState(true);
+            switch (input) {
+                case ADD:
+                    outputFraction = inputFraction.add(newFraction);
+                    break;
+                case SUBTRACT:
+                    outputFraction = inputFraction.subtract(newFraction);
+                    break;
+                case MULTIPLY:
+                    outputFraction = inputFraction.multiply(newFraction);
+                    break;
+                case DIVIDE:
+                    outputFraction = inputFraction.divide(newFraction);
+                    break;
+                case ABSOLUTE:
+                    outputFraction = inputFraction.absValue();
+                    break;
+                case NEGATE:
+                    outputFraction = inputFraction.negate();
+                    break;
+                case STORE_VALUE:
+                    outputFraction = newFraction;
+                    break;
+                case CLEAR_VALUE:
+                    outputFraction = new Fraction(0, 1);
+                    break;
+                default:
+                    outputFraction = inputFraction;
+                    break;
             }
-        }
-
-        if (inputString.equals("-")) {
-            errorInput = false;
-            if (getCalculatorMemory() == Operation.NIL) {
-                setCalculatorMemory(Operation.SUBTRACT);
-            } else {
-                System.out.println("Error: operator already provided");
-                setErrorState(true);
-            }
-        }
-
-        if (inputString.equals("/")) {
-            errorInput = false;
-            if (getCalculatorMemory() == Operation.NIL) {
-                setCalculatorMemory(Operation.DIVIDE);
-            } else {
-                System.out.println("Error: operator already provided");
-                setErrorState(true);
-            }
-        }
-
-        if (isInteger(inputString)) {
-            errorInput = false;
-            newFraction = new Fraction(parseInteger(inputString),1);
-            if (getCalculatorMemory() == Operation.NIL) {
-                input = Operation.STORE_VALUE;
-            } else {
-                input = getCalculatorMemory();
-                setCalculatorMemory(Operation.NIL);
-            }
-        }
-
-        if (isFraction(inputString)) {
-            errorInput = false;
-            newFraction = parseFraction(inputString);
-            if (getCalculatorMemory() == Operation.NIL) {
-                input = Operation.STORE_VALUE;
-            } else {
-                input = getCalculatorMemory();
-                setCalculatorMemory(Operation.NIL);
-            }
-        }
-
-        if (inputString.equalsIgnoreCase("n")||inputString.equalsIgnoreCase("neg")) {
-            errorInput = false;
-            input = Operation.NEGATE;
-        }
-
-        if (inputString.equalsIgnoreCase("a")||inputString.equalsIgnoreCase("abs")) {
-            errorInput = false;
-            input = Operation.ABSOLUTE;
-        }
-
-        if (inputString.equalsIgnoreCase("c")||inputString.equalsIgnoreCase("clear")) {
-            errorInput = false;
-            input = Operation.CLEAR_VALUE;
-        }
-
-        if (errorInput) {
-            setErrorState(true);
-            setFatalErrorState(true);
-        }
-
-        switch(input) {
-            case ADD:
-                outputFraction = fraction.add(newFraction);
-                break;
-            case SUBTRACT:
-                outputFraction = fraction.subtract(newFraction);
-                break;
-            case MULTIPLY:
-                outputFraction = fraction.multiply(newFraction);
-                break;
-            case DIVIDE:
-                outputFraction = fraction.divide(newFraction);
-                break;
-            case ABSOLUTE:
-                outputFraction = fraction.absValue();
-                break;
-            case NEGATE:
-                outputFraction = fraction.negate();
-                break;
-            case STORE_VALUE:
-                outputFraction = newFraction;
-                break;
-            case CLEAR_VALUE:
-                outputFraction = new Fraction(0,1);
-                break;
-            default:
-                outputFraction = fraction;
-                break;
         }
         return(outputFraction);
     }
