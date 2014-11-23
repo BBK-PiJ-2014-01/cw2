@@ -7,8 +7,15 @@ public class FractionCalculator {
 
     private Fraction calculatorValue;
     private Operation calculatorMemory;
-    private boolean errorState = false;         // Raised when inappropriate input. Triggers calculator 'reset' & Error message
-    private boolean finishedState = false;      // Raised when user inputs a "quit" or equivalent command. Triggers calculator exit but no "Goodbye" message.
+    private boolean errorState = false;
+    private boolean finishedState = false;
+
+    /* Error management:
+        - errorState flag raised when inappropriate input. Triggers calculator 'reset' & "Error" message
+        - finishedState flag raised when user inputs a "quit" or equivalent command. Triggers calculator exit but no "Goodbye" message
+        - if the end of input exception is identified with no input, it triggers a "Goodbye" and the calculator exit
+        - program does not handle 'CTRL C' input, as assumption is that exception handling would then be required
+    */
 
     // Getter(s) & Setters() for all private attributes of the Class
 
@@ -54,12 +61,25 @@ public class FractionCalculator {
         fc.run();
     }
 
+    /*
+    'run' method
+    Description:
+        - Gets line of input from user
+        - Passes on the user line of input to the 'evaluate' method for evaluation and calculation
+        - Triggers appropriate calculator behavior when an error state is raised.
+     */
+
     public void run() {
         System.out.println("Welcome Pierre Meyer!");
         do {
             Scanner scanner = new Scanner(System.in);
             String commandLine = scanner.nextLine();
-            setCalculatorValue(evaluate(getCalculatorValue(), commandLine));
+            if (commandLine.equals("")) {
+                System.out.println("Goodbye");
+                setFinishedState(true);
+            } else {
+                setCalculatorValue(evaluate(getCalculatorValue(), commandLine));
+            }
             if (getErrorState()) {
                 System.out.println("Error");
                 reset();
@@ -68,6 +88,19 @@ public class FractionCalculator {
                 System.out.println(calculatorValue.toString());
         } while (!getFinishedState());
     }
+
+    /*
+    'evaluate' method
+    Description:
+        - splits user line of input using the space delimiter
+        - validates each substring
+        - calculates the resulting fraction after each substring validation
+        - return the final fraction at the end of the user line input
+        - raise errorState flag if inappropriate input identified
+        - raise finishedState flag if a user command to quit is found
+    Returns:
+        - result of the calculation as a fraction
+     */
 
     public Fraction evaluate(Fraction fraction, String inputString) {
 
@@ -81,11 +114,18 @@ public class FractionCalculator {
             Fraction inputFraction = outputFraction;
             Boolean errorInput = true;
 
+            /*
+            Sequence of tests to validate and recognise user input
+            If no test is valid, errorInput remains true, and the calculator error state is raised.
+            */
+
+            // commands such as "q" or "quit" or "exit" (case ignored) trigger the flag finishedState
             if ((commandItem[i].equalsIgnoreCase("q")) || (commandItem[i].equalsIgnoreCase("quit")) || (commandItem[i].equalsIgnoreCase("exit"))) {
                 errorInput = false;
                 setFinishedState(true);
             }
 
+            // operator '*' is stored in the calculator memory, if empty. if not empty, it triggers the flag errorState
             if (commandItem[i].equals("*")) {
                 errorInput = false;
                 if (getCalculatorMemory() == Operation.NIL) {
@@ -96,6 +136,7 @@ public class FractionCalculator {
                 }
             }
 
+            // operator '+' is stored in the calculator memory, if empty. if not empty, it triggers the flag errorState
             if (commandItem[i].equals("+")) {
                 errorInput = false;
                 if (getCalculatorMemory() == Operation.NIL) {
@@ -106,6 +147,7 @@ public class FractionCalculator {
                 }
             }
 
+            // operator '-' is stored in the calculator memory, if empty. if not empty, it triggers the flag errorState
             if (commandItem[i].equals("-")) {
                 errorInput = false;
                 if (getCalculatorMemory() == Operation.NIL) {
@@ -116,6 +158,7 @@ public class FractionCalculator {
                 }
             }
 
+            // operator '/' is stored in the calculator memory, if empty. if not empty, it triggers the flag errorState
             if (commandItem[i].equals("/")) {
                 errorInput = false;
                 if (getCalculatorMemory() == Operation.NIL) {
@@ -126,6 +169,7 @@ public class FractionCalculator {
                 }
             }
 
+            // checking if string can be parsed into an integer. If so, converts to a fraction. Setting operator as required based on memory state.
             if (isInteger(commandItem[i])) {
                 errorInput = false;
                 newFraction = new Fraction(parseInteger(commandItem[i]), 1);
@@ -137,6 +181,7 @@ public class FractionCalculator {
                 }
             }
 
+            // checking if string can be parsed into a fraction. If so, converts to a fraction. Setting operator as required based on memory state.
             if (isFraction(commandItem[i])) {
                 errorInput = false;
                 newFraction = parseFraction(commandItem[i]);
@@ -148,24 +193,30 @@ public class FractionCalculator {
                 }
             }
 
+            // checking and setting operator as required, if need to negate the last fraction in memory
             if (commandItem[i].equalsIgnoreCase("n") || commandItem[i].equalsIgnoreCase("neg")) {
                 errorInput = false;
                 input = Operation.NEGATE;
             }
 
+            // checking and setting operator as required, if need to calculate the absolute value of the last fraction in memory
             if (commandItem[i].equalsIgnoreCase("a") || commandItem[i].equalsIgnoreCase("abs")) {
                 errorInput = false;
                 input = Operation.ABSOLUTE;
             }
 
+            // checking and setting operator as required, if need to clear the value held by the calculator to zero
             if (commandItem[i].equalsIgnoreCase("c") || commandItem[i].equalsIgnoreCase("clear")) {
                 errorInput = false;
                 input = Operation.CLEAR_VALUE;
             }
 
+            // if it was not possible to process/recognise the content of a substring, it triggers the flag errorState
             if (errorInput) {
                 setErrorState(true);
             }
+
+            // Calculates a new value as a fraction, based on the previous value in memory and the memorised operator
 
             switch (input) {
                 case ADD:
