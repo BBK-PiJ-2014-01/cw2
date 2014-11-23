@@ -5,7 +5,8 @@ public class FractionCalculatorTest {
     public static void main(String[] args) {
         FractionCalculator c = new FractionCalculator(new Fraction(0,1),Operation.NIL);
 
-        System.out.println("Testing Negate input: (no error message should print)");
+        System.out.println("Testing Negate input: (no error message, except 'testing the test', should print)");
+        FractionTest.test(new Fraction(-1, 2),c.evaluate(new Fraction(-1,2),"n"),"Error NEG-Test: testing the test");
         FractionTest.test(new Fraction(1, 2),c.evaluate(new Fraction(-1,2),"n"),"Error NEG-T1: in 'evaluate method' with 'negate' command");
         FractionTest.test(new Fraction(1, 2),c.evaluate(new Fraction(-1,2),"N"),"Error NEG-T2 in 'evaluate method' with 'negate' command");
         FractionTest.test(new Fraction(1, 2),c.evaluate(new Fraction(-1,2),"neg"),"Error NEG-T3 in 'evaluate method' with 'negate' command");
@@ -13,12 +14,22 @@ public class FractionCalculatorTest {
         FractionTest.test(new Fraction(1, 2),c.evaluate(new Fraction(-1,2),"NEG"),"Error NEG-T5 in 'evaluate method' with 'negate' command");
         System.out.println("");
 
-        System.out.println("Testing Absolute input: (no error message should print)");
+        System.out.println("Testing Absolute input: (no error message, except 'testing the test', should print)");
+        FractionTest.test(new Fraction(-1, 2),c.evaluate(new Fraction(-1,2),"a"),"Error ABS-Test: testing the test");
         FractionTest.test(new Fraction(1, 2),c.evaluate(new Fraction(-1,2),"a"),"Error ABS-T1: in 'evaluate method' with 'absolute' command");
         FractionTest.test(new Fraction(1, 2),c.evaluate(new Fraction(-1,2),"A"),"Error ABS-T2: in 'evaluate method' with 'absolute' command");
         FractionTest.test(new Fraction(1, 2),c.evaluate(new Fraction(-1,2),"abs"),"Error ABS-T3: in 'evaluate method' with 'absolute' command");
         FractionTest.test(new Fraction(1, 2),c.evaluate(new Fraction(-1,2),"Abs"),"Error ABS-T4: in 'evaluate method' with 'absolute' command");
         FractionTest.test(new Fraction(1, 2),c.evaluate(new Fraction(-1,2),"ABS"),"Error ABS-T5: in 'evaluate method' with 'absolute' command");
+        System.out.println("");
+
+        System.out.println("Testing Clear input: (no error message, except 'testing the test', should print)");
+        FractionTest.test(new Fraction(1, 1),c.evaluate(new Fraction(-1,2),"c"),"Error CLR-Test: testing the test");
+        FractionTest.test(new Fraction(0, 1),c.evaluate(new Fraction(-1,2),"c"),"Error CLR-T1: in 'evaluate method' with 'absolute' command");
+        FractionTest.test(new Fraction(0, 1),c.evaluate(new Fraction(-1,2),"C"),"Error CLR-T2: in 'evaluate method' with 'absolute' command");
+        FractionTest.test(new Fraction(0, 1),c.evaluate(new Fraction(-1,2),"clear"),"Error CLR-T3: in 'evaluate method' with 'absolute' command");
+        FractionTest.test(new Fraction(0, 1),c.evaluate(new Fraction(-1,2),"Clear"),"Error CLR-T4: in 'evaluate method' with 'absolute' command");
+        FractionTest.test(new Fraction(0, 1),c.evaluate(new Fraction(-1,2),"CLEAR"),"Error CLR-T5: in 'evaluate method' with 'absolute' command");
         System.out.println("");
 
         System.out.println("Testing Operation input with operation already in memory: (4 error messages should print)");
