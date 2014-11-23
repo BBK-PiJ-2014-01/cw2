@@ -98,6 +98,7 @@ public class FractionTest {
         test(new Fraction(4, -8),new Fraction(1, 2),"error test 5 - EXPECTED");
     }
 
+    // test if two fractions are equal
     static void test(Fraction f1, Fraction f2, String msg){
         if (! f1.equals(f2))
             System.out.println(msg);

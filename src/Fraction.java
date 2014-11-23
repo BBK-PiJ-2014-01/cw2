@@ -33,6 +33,8 @@ public class Fraction {
             return("" + getNumerator() + '/' + getDenominator());
     }
 
+    // Getter(s) & Setters() for all private attributes of the Class
+
     public int getNumerator() {
         return numerator;
     }

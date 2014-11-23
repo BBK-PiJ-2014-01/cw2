@@ -7,9 +7,10 @@ public class FractionCalculator {
 
     private Fraction calculatorValue;
     private Operation calculatorMemory;
-    private boolean errorState = false;         // Raised for general exceptions not requiring app. exit - Spec. page 2
-    private boolean fatalErrorState = false;    // Raised when unexpected input requiring app. exit - Spec. page 1
-    private boolean finishedState = false;
+    private boolean errorState = false;         // Raised when inappropriate input. Triggers calculator 'reset' & Error message
+    private boolean finishedState = false;      // Raised when user inputs a "quit" or equivalent command. Triggers calculator exit but no "Goodbye" message.
+
+    // Getter(s) & Setters() for all private attributes of the Class
 
     public FractionCalculator(Fraction fraction, Operation memory) {
         this.calculatorValue = fraction;
@@ -40,14 +41,6 @@ public class FractionCalculator {
         errorState = state;
     }
 
-    public boolean getFatalErrorState() {
-        return(fatalErrorState);
-    }
-
-    public void setFatalErrorState(boolean state) {
-        fatalErrorState = state;
-    }
-
     public boolean getFinishedState() {
         return(finishedState);
     }
@@ -68,21 +61,18 @@ public class FractionCalculator {
             String commandLine = scanner.nextLine();
             setCalculatorValue(evaluate(getCalculatorValue(), commandLine));
             if (getErrorState()) {
-                if (getFatalErrorState()) {
-                    System.out.println("Error: incorrect entry");
-                    setFinishedState(true);
-                }
+                System.out.println("Error");
                 reset();
             }
-            System.out.println(calculatorValue.toString());
+            if (!getFinishedState())
+                System.out.println(calculatorValue.toString());
         } while (!getFinishedState());
     }
 
     public Fraction evaluate(Fraction fraction, String inputString) {
 
-        Fraction newFraction = new Fraction(0,1); // check
-        Fraction outputFraction = fraction; // check
-        //Fraction inputFraction = fraction;
+        Fraction newFraction = new Fraction(0,1);
+        Fraction outputFraction = fraction;
 
         String[] commandItem = inputString.split("\\s");
 
@@ -90,6 +80,7 @@ public class FractionCalculator {
             Operation input = Operation.NIL;
             Fraction inputFraction = outputFraction;
             Boolean errorInput = true;
+
             if ((commandItem[i].equalsIgnoreCase("q")) || (commandItem[i].equalsIgnoreCase("quit")) || (commandItem[i].equalsIgnoreCase("exit"))) {
                 errorInput = false;
                 setFinishedState(true);
@@ -174,7 +165,6 @@ public class FractionCalculator {
 
             if (errorInput) {
                 setErrorState(true);
-                setFatalErrorState(true);
             }
 
             switch (input) {
@@ -207,15 +197,35 @@ public class FractionCalculator {
                     break;
             }
         }
+        setCalculatorMemory(Operation.NIL); // End of entry line - remembered operation reset
         return(outputFraction);
     }
+
+    /*
+    'reset' method
+    Description:
+        - resets all calculator object attributes to their initial state
+    Returns:
+        - nothing
+     */
 
     private void reset() {
         setCalculatorValue(new Fraction(0,1));
         setCalculatorMemory(Operation.NIL);
         setErrorState(false);
-        setFatalErrorState(false);
+        setFinishedState(false);
     }
+
+    /*
+    'isInteger' method
+    Description:
+        - check the format of the string to assess if it can be converted into an integer
+        - an integer is recognised by identifying one set of numerical digits only, not followed by any characters, but with a possible sign prefix.
+        - a sign prefix would be one digit long and either include one '+' or one '-' character.
+    Returns:
+        - 'true' if the string can be parsed into an integer
+        - 'false' if the string cannot be parsed into an integer
+     */
 
     private boolean isInteger(String input) {
         boolean isInteger = false;
@@ -223,6 +233,17 @@ public class FractionCalculator {
             isInteger = true;
         return(isInteger);
     }
+
+     /*
+    'isFraction' method
+    Description:
+        - check the format of the string to assess if it can be converted into a fraction
+        - a fraction is recognised by identifying two sets of numerical digits only, separated by a '/' sign, with no space in-between
+        - both sets of numerical digits can have a sign prefix (one digit long): either '+' or '-' are accepted.
+    Returns:
+        - 'true' if the string can be parsed into a fraction
+        - 'false' if the string cannot be parsed into a fraction
+     */
 
     private boolean isFraction(String input) {
         boolean isFraction = false;
@@ -232,9 +253,27 @@ public class FractionCalculator {
         return(isFraction);
     }
 
+     /*
+    'parseInteger' method
+    Description:
+        - converts a string of the appropriate format into an integer
+        - recommended to check the string structure with the 'isInteger' method before attempting parsing
+    Returns:
+        - resulting integer
+    */
+
     private int parseInteger(String input) {
         return(Integer.parseInt(input));
     }
+
+     /*
+    'parseFraction' method
+    Description:
+        - converts a string of the appropriate format into a fraction
+        - recommended to check the string structure with the 'isFraction' method before attempting parsing
+    Returns:
+        - resulting fraction
+    */
 
     private Fraction parseFraction(String input) {
         String[] fractionItem = input.split("/");

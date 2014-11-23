@@ -43,15 +43,43 @@ public class FractionCalculatorTest {
         FractionTest.test(new Fraction(-1, 2),c.evaluate(new Fraction(-1,2),"-"),"Error MEM-T4: in 'evaluate method'");
         System.out.println("");
 
-        System.out.println("Testing fraction numbers are accepted : (no error message should print)");
+        System.out.println("Testing fraction numbers are accepted : (no error message, except 'testing the test', should print)");
+        c = new FractionCalculator(new Fraction(0,1),Operation.ADD);
+        FractionTest.test(new Fraction(13, 5),c.evaluate(new Fraction(10,5),"3/5-"),"Error FRAC-Test: testing the test");
         c = new FractionCalculator(new Fraction(0,1),Operation.ADD);
         FractionTest.test(new Fraction(13, 5),c.evaluate(new Fraction(10,5),"3/5"),"Error FRAC-T1: in 'evaluate method'");
+        c = new FractionCalculator(new Fraction(0,1),Operation.ADD);
+        FractionTest.test(new Fraction(13, 5),c.evaluate(new Fraction(10,5),"+3/5"),"Error FRAC-T2: in 'evaluate method'");
+        c = new FractionCalculator(new Fraction(0,1),Operation.ADD);
+        FractionTest.test(new Fraction(13, 5),c.evaluate(new Fraction(10,5),"3/+5"),"Error FRAC-T3: in 'evaluate method'");
+        c = new FractionCalculator(new Fraction(0,1),Operation.ADD);
+        FractionTest.test(new Fraction(7, 5),c.evaluate(new Fraction(10,5),"-3/5"),"Error FRAC-T4: in 'evaluate method'");
+        c = new FractionCalculator(new Fraction(0,1),Operation.ADD);
+        FractionTest.test(new Fraction(7, 5),c.evaluate(new Fraction(10,5),"3/-5"),"Error FRAC-T5: in 'evaluate method'");
+        c = new FractionCalculator(new Fraction(0,1),Operation.ADD);
+        FractionTest.test(new Fraction(13, 5),c.evaluate(new Fraction(10,5),"-3/-5"),"Error FRAC-T6: in 'evaluate method'");
         System.out.println("");
 
-        System.out.println("Testing whole numbers are accepted : (no error message should print)");
+        System.out.println("Testing whole numbers are accepted : (no error message, except 'testing the test', should print)");
+        c = new FractionCalculator(new Fraction(0,1),Operation.ADD);
+        FractionTest.test(new Fraction(28, 5),c.evaluate(new Fraction(3,5),"5+"),"Normal Error WHOLE-Test: testing the test'");
         c = new FractionCalculator(new Fraction(0,1),Operation.ADD);
         FractionTest.test(new Fraction(28, 5),c.evaluate(new Fraction(3,5),"5"),"Error WHOLE-T1: in 'evaluate method'");
+        c = new FractionCalculator(new Fraction(0,1),Operation.ADD);
+        FractionTest.test(new Fraction(28, 5),c.evaluate(new Fraction(3,5),"+5"),"Error WHOLE-T2: in 'evaluate method'");
+        c = new FractionCalculator(new Fraction(0,1),Operation.ADD);
+        FractionTest.test(new Fraction(-22, 5),c.evaluate(new Fraction(3,5),"-5"),"Error WHOLE-T3: in 'evaluate method'");
         System.out.println("");
 
+        System.out.println("Testing that complex input are processed correctly  : (no error message, except 'testing the test', should print)");
+        c = new FractionCalculator(new Fraction(0,1),Operation.NIL);
+        FractionTest.test(new Fraction(28, 5),c.evaluate(new Fraction(3,5),"5 + 5 * 2 + 1/2 NEG"),"Normal Error COMPLEX-Test: testing the test");
+        c = new FractionCalculator(new Fraction(0,1),Operation.NIL);
+        FractionTest.test(new Fraction(41, -2),c.evaluate(new Fraction(3,5),"5 + 5 * 2 + 1/2 NEG"),"Error COMPLEX-T1: in 'evaluate method'");
+        c = new FractionCalculator(new Fraction(0,1),Operation.NIL);
+        FractionTest.test(new Fraction(117, -10),c.evaluate(new Fraction(3,5),"+ 5 * 2 + 1/2 NEG"),"Error COMPLEX-T2: in 'evaluate method'");
+        c = new FractionCalculator(new Fraction(0,1),Operation.NIL);
+        FractionTest.test(new Fraction(1, 5),c.evaluate(new Fraction(3,5),"3 * 2/5 - 1 ABS"),"Error COMPLEX-T3: in 'evaluate method'");
+        System.out.println("");
     }
 }
